@@ -22,12 +22,16 @@ export default function UserSignup() {
 
   const next = () => {
     axios.post(`${DOMAIN}/user/sign-up-one`, {
-      body: JSON.stringify({
         name,
         phone,
-      })
-    }).then(res =>console.log(res.data))
-    .then(() => setShowNext(true))
+    }).then(res => {
+      console.log(res)
+      setShowNext(true)
+    })
+      .catch(err => {
+        if (err.response.data.msg === "Provided value is not a valid Phone Number")
+        return setInvalid1("Please enter a valid phone number!")
+    })
   }
 
   const signUp = () => {
