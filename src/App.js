@@ -25,6 +25,7 @@ import UserLogin from "./Pages/UserLogin";
 import UserSignup from "./Pages/UserSignup";
 import AdminLogin from "./Pages/AdminLogin";
 import Timer from "./Timer";
+import Shop from "./Pages/Shop";
 
 function App() {
   return (
@@ -35,6 +36,7 @@ function App() {
           <Route path="" element={<Home />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
+          <Route path="shop" element={<Shop />} />
           <Route path="cart" element={<Cart />} />
           <Route path="checkout" element={<Checkout />} />
           <Route path="product/:id" element={<Product />} />
