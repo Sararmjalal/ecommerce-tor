@@ -11,8 +11,7 @@ export default function Timer() {
   
           minutes = minutes < 10 ? "0" + minutes : minutes;
           seconds = seconds < 10 ? "0" + seconds : seconds;
-  
-          time.current.innerHTML = minutes + ":" + seconds;
+          if (time.current) { time.current.innerHTML = minutes + ":" + seconds }
   
           if (--timer < 0) {
               timer = 0;

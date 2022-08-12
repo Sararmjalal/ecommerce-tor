@@ -1,4 +1,11 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { DOMAIN } from "./config/constants";
+import { useEffect, useState } from "react";
+import axios from "axios";
+import Cookies from "universal-cookie";
+import { useDispatch } from "react-redux";
+import { setUser, setAdmin } from "./Global State/Slice";
+
 import WebLayout from "./Layouts/WebLayout";
 import AdminDashboardLayout from "./Layouts/A-DashboardLayout"
 import UserDashboardLayout from "./Layouts/U-DashboardLayout"
@@ -24,10 +31,49 @@ import DUEditProfile from "./Pages/DUEditProfile";
 import UserLogin from "./Pages/UserLogin";
 import UserSignup from "./Pages/UserSignup";
 import AdminLogin from "./Pages/AdminLogin";
-import Timer from "./Timer";
 import Shop from "./Pages/Shop";
+import AdminCreate from "./Pages/AdminCreate";
 
 function App() {
+  const [loading, setLoading]= useState(true)
+  const cookies = new Cookies()
+  const dispatch = useDispatch()
+  const token = cookies.get('ut')
+  const adminToken = cookies.get('at')
+
+  useEffect(() => {
+
+    if (!token && !adminToken) return setLoading(false)
+
+    if(token) {
+    return axios.post(`${DOMAIN}/user/me`, {
+      body: JSON.stringify({})
+    }, {
+      headers: {
+        auth: `ut ${token}`
+      }
+    }).then(res => dispatch(setUser(res.data)))
+      .then(() => setLoading(false))
+      .catch(err => console.log(err))
+    }
+
+    if (adminToken) {
+      axios.post(`${DOMAIN}/admin/me`, {
+        data: JSON.stringify({})
+      },
+        {
+          headers: {
+          a_auth: `at ${adminToken}` 
+        }
+        })
+        .then(res => dispatch(setAdmin(res.data)))
+        .then(() => setLoading(false))
+        .catch(err => console.log(err))
+    }
+    
+  }, [])
+
+  if(loading) return <h1>Loading...</h1>
   return (
     <Router>
       <Routes>
@@ -63,9 +109,8 @@ function App() {
 
         <Route path="/login" element={<UserLogin />} />
         <Route path="/signup" element={<UserSignup />} />
-        <Route path="admin/login" element={<AdminLogin />} />
-
-        <Route path="timer" element={<Timer />}/>
+        <Route path="/admin/login" element={<AdminLogin />} />
+        <Route path="/admin/create" element={<AdminCreate />}/>
 
       </Routes>
     </Router>
