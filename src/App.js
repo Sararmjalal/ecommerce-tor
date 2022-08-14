@@ -33,6 +33,7 @@ import UserSignup from "./Pages/UserSignup";
 import AdminLogin from "./Pages/AdminLogin";
 import Shop from "./Pages/Shop";
 import AdminCreate from "./Pages/AdminCreate";
+import DUAddresses from "./Pages/DUAdresses";
 
 function App() {
   const [loading, setLoading]= useState(true)
@@ -43,33 +44,38 @@ function App() {
 
   useEffect(() => {
 
-    if (!token && !adminToken) return setLoading(false)
+    const abc = () => {
 
-    if(token) {
-    return axios.post(`${DOMAIN}/user/me`, {
-      body: JSON.stringify({})
-    }, {
-      headers: {
-        auth: `ut ${token}`
-      }
-    }).then(res => dispatch(setUser(res.data)))
-      .then(() => setLoading(false))
-      .catch(err => console.log(err))
-    }
-
-    if (adminToken) {
-      axios.post(`${DOMAIN}/admin/me`, {
-        data: JSON.stringify({})
-      },
-        {
-          headers: {
-          a_auth: `at ${adminToken}` 
+      if (!token && !adminToken) return setLoading(false)
+  
+      if(token) {
+      return axios.post(`${DOMAIN}/user/me`, {
+        body: JSON.stringify({})
+      }, {
+        headers: {
+          auth: `ut ${token}`
         }
-        })
-        .then(res => dispatch(setAdmin(res.data)))
+      }).then(res => dispatch(setUser(res.data)))
         .then(() => setLoading(false))
         .catch(err => console.log(err))
+      }
+  
+      if (adminToken) {
+        axios.post(`${DOMAIN}/admin/me`, {
+          data: JSON.stringify({})
+        },
+          {
+            headers: {
+            a_auth: `at ${adminToken}` 
+          }
+          })
+          .then(res => dispatch(setAdmin(res.data)))
+          .then(() => setLoading(false))
+          .catch(err => console.log(err))
+      }
     }
+
+    abc()
     
   }, [])
 
@@ -104,6 +110,7 @@ function App() {
         <Route path="/user/dashboard/" element={<UserDashboardLayout />}>
           <Route path="" element={<DUDashboard />} />
           <Route path="orders" element={<DUOrders />} />
+          <Route path="addresses" element={<DUAddresses />} />
           <Route path="profile/edit" element={<DUEditProfile />} />
         </Route>
 

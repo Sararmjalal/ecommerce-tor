@@ -2,16 +2,51 @@ import { useState } from "react"
 import Logo from "../Uploads/Logo.png"
 import { useSelector, useDispatch } from 'react-redux'
 import { current_user, current_admin, adminLogout, logout } from "../Global State/Slice"
-import { useNavigate } from "react-router-dom"
+import { useNavigate, Link } from "react-router-dom"
+import Confirm from "./Confirm"
 
 export default function Header() {
   const [mobileMenu, setMobileMenu] = useState(false)
+  const [showModal, setShowModal] = useState(false)
   const thisUser = useSelector(current_user)
   const thisAdmin = useSelector(current_admin)
   const dispatch = useDispatch()
   const navigate = useNavigate()
 
+
   return (
+    <div>
+      {
+        showModal ?
+          <Confirm
+            showModal={showModal}
+            setShowModal={setShowModal}
+          />
+          :
+          ""
+      }
+      {
+      thisAdmin ?
+          
+      <div className="w-full h-8 bg-gray-700 flex px-4 text-gray-100 pt-1.5 text-sm">
+        <Link to="/admin/dashboard">
+          <div className="w-[calc(100vw-9.5rem)]">
+                Hello <span className="font-semibold text-white">{thisAdmin.name}</span>
+          </div>
+        </Link>
+        <Link to="/admin/dashboard">
+          <div className="w-18 mr-3 text-gray-300 hover:text-white">Dashboard</div>
+        </Link>     
+          <div
+              className="w-11 text-gray-300 hover:text-white cursor-pointer"
+              onClick={() => setShowModal(true)}
+          >
+            Logout
+          </div>
+      </div>
+          :
+          ""
+      }
     <div className="shadow-md	shadow-gray-700/10 z-100">
     <nav className="bg-white border-gray-200 px-4 lg:px-6 py-2.5">
         <div className="flex flex-wrap justify-between items-center mx-auto max-w-screen-xl">
@@ -26,13 +61,12 @@ export default function Header() {
                           thisUser ? 
                           <>
                           <p
-                    className="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 cursor-pointer"
-                    onClick={() => {
-                      dispatch(logout())
-                      navigate('/')
-                    }}
-                    >Logout</p>
+                            className="text-gray-800 dark:text-white hover:bg-gray-50 focus:ring-4 focus:ring-gray-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 cursor-pointer"
+                            onClick={() => setShowModal(true)}
+                          >Logout</p>
+                          <a href="/user/dashboard">
                           <p className="text-white bg-violet-700 hover:bg-primary-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-4 lg:px-5 py-2 lg:py-2.5 mr-2 cursor-pointer">Dashboard</p>
+                          </a>
                             </>
                               :
                                <>
@@ -96,6 +130,7 @@ export default function Header() {
           :
           ''
       }
+    </div>
     </div>
   )
 }

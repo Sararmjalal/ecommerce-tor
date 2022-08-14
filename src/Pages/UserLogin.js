@@ -89,7 +89,6 @@ export default function UserLogin() {
                 placeholder="Phone Number"
                 className="text-gray-400 w-full py-3 pl-2 bg-gray-100 rounded-xl outline-none"
                 value={phone}
-                onChange={(e) => setPhone(e.target.value)}
               />
           </div>
           <div className="w-1/3 ml-2">
