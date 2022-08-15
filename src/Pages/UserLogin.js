@@ -24,7 +24,7 @@ export default function UserLogin() {
     if (thisAdmin) return navigate('/admin/dashboard')
   }, [])
 
-  const next = () => {
+  const next = async() => {
     axios.post(`${DOMAIN}/user/login-one`, {
       phone,
     })

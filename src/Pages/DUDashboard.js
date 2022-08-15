@@ -8,7 +8,7 @@ export default function DUDashboard() {
   const [showModal, setShowModal] = useState(false)
 
   return (
-    <div className="mt-9 ml-80 mr-10">
+    <div className="sm:mt-9 sm:ml-80 sm:mr-10 m-8">
       <h1 className="text-lg text-gray-700 font-semibold mb-4">Dashboard</h1>
       <p className="font-light">Welcome {thisUser.name}! This is your dashboard. You can access your orders, add your addresses and edit your profile in here. </p>
       <p className="text-sm mt-2 font-light">
