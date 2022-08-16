@@ -6,7 +6,7 @@ import { useState } from "react"
 export default function Confirm(props) {
   const thisAdmin = useSelector(current_admin)
   const dispatch = useDispatch()
-  const navigate = useNavigate()
+  const navigate = useNavigate() 
 
   return (
           <>
@@ -19,12 +19,12 @@ export default function Confirm(props) {
                 if (e.key === 'Enter') return 
               }}
               className="bg-white shadow-md	shadow-gray-700/10 p-5 rounded-xl sm:w-[30rem] h-48 w-11/12 fixed top-[calc(50vh-10rem)] sm:left-[calc(50vw-15rem)] left-[calc(50vw-45.8%)] z-20">
-              <h1 className="text-violet-700 mb-5 font-semibold	text-xl	">Logout</h1>
+              <h1 className={`${thisAdmin ? "text-gray-900" : "text-violet-700"} mb-5 font-semibold	text-xl`}>Logout</h1>
               <div className="h-8 mt-2 text-gray-600">Are you sure you want to logout?</div>
               <div className="flex">
                 <div className="w-1/2">
                   <button
-                    className="w-full mt-3 mb-12 py-3 text-white bg-violet-700 outline-none hover:bg-violet-600 focus:ring-4 focus:ring-primary-300 font-medium rounded-xl text-base px-4 mr-2 "
+                    className={`${thisAdmin ? "bg-gray-900 outline-none hover:bg-gray-800" : "bg-violet-700 outline-none hover:bg-violet-600"} w-full mt-3 mb-12 py-3 text-white focus:ring-4 focus:ring-primary-300 font-medium rounded-xl text-base px-4 mr-2`}
                     onClick={() => props.setShowModal(false)}
                   >
                     Cancel
