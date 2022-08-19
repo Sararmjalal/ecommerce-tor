@@ -1,7 +1,6 @@
 import { current_admin, logout, adminLogout } from "../Global State/Slice"
 import { useSelector, useDispatch } from "react-redux"
 import { useNavigate } from "react-router-dom"
-import { useState } from "react"
 
 export default function Confirm(props) {
   const thisAdmin = useSelector(current_admin)
@@ -16,7 +15,15 @@ export default function Confirm(props) {
             ></div>
             <div
               onKeyDown={(e) => {
-                if (e.key === 'Enter') return 
+               if (e.key === 'Enter' && thisAdmin)
+                  {
+                  props.setShowModal(false)
+                  dispatch(adminLogout())
+                  navigate('/')
+                   }
+                  props.setShowModal(false)
+                  dispatch(logout())
+                  navigate('/')
               }}
               className="bg-white shadow-md	shadow-gray-700/10 p-5 rounded-xl sm:w-[30rem] h-48 w-11/12 fixed top-[calc(50vh-10rem)] sm:left-[calc(50vw-15rem)] left-[calc(50vw-45.8%)] z-20">
               <h1 className={`${thisAdmin ? "text-gray-900" : "text-violet-700"} mb-5 font-semibold	text-xl`}>Logout</h1>

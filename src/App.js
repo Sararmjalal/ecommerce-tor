@@ -5,6 +5,8 @@ import axios from "axios";
 import Cookies from "universal-cookie";
 import { useDispatch } from "react-redux";
 import { setUser, setAdmin } from "./Global State/Slice";
+import { ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 import WebLayout from "./Layouts/WebLayout";
 import AdminDashboardLayout from "./Layouts/A-DashboardLayout"
@@ -57,7 +59,7 @@ function App() {
         }
       }).then(res => dispatch(setUser(res.data)))
         .then(() => setLoading(false))
-        .catch(err => console.log(err))
+        .catch(err => setLoading(false))
       }
   
       if (adminToken) {
@@ -71,7 +73,7 @@ function App() {
           })
           .then(res => dispatch(setAdmin(res.data)))
           .then(() => setLoading(false))
-          .catch(err => console.log(err))
+          .catch(err => setLoading(false))
       }
     }
 
@@ -81,6 +83,19 @@ function App() {
 
   if(loading) return <h1>Loading...</h1>
   return (
+    <>
+    <ToastContainer
+      position="top-right"
+      autoClose={5000}
+      hideProgressBar={false}
+      newestOnTop={false}
+      closeOnClick
+      rtl={false}
+      pauseOnFocusLoss
+      draggable
+      pauseOnHover
+    />
+
     <Router>
       <Routes>
 
@@ -120,7 +135,8 @@ function App() {
         <Route path="/admin/create" element={<AdminCreate />}/>
 
       </Routes>
-    </Router>
+      </Router>
+      </>
   )
 }
 

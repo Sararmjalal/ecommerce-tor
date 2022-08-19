@@ -1,96 +1,264 @@
+import axios from "axios"
 import { useState } from "react"
-import OptionRows from "../Components/AddCatOptionsRows"
+import Cookies from "universal-cookie"
+import TypesMenu from "../Components/AddCatTypesMenu"
+import { DOMAIN } from "../config/constants"
+import * as MdIcons from "react-icons/md"
+import * as IOIcons from "react-icons/io5"
+import { toast } from 'react-toastify'
+import { useNavigate } from "react-router-dom"
+import SmallLoading from "../Components/SmallLoading"
 
 export default function DAAddCategory() {
   const [catName, setCatName] = useState('')
-  const [varRows, setVarRows] = useState([1])
-  const [optRows, setOptRows] = useState([[1]])
-  const [vars, setVars] = useState([[]])
+  const cookies = new Cookies()
+  const navigate = useNavigate()
+  const [vars, setVars] = useState([
+    {
+      name: '',
+      type: '',
+      options: [""],
+      errorMessage: ''
+    },
+  ])
+  const [showLoading, setShowLoading] = useState(false)
 
   const addVarRows = () => {
-    const clone = [...varRows]
-    const clone2 = [...vars]
-    const clone3 = [...optRows]
-    clone.push(varRows.length + 1)
-    clone2.push([])
-    clone3.push([1])
-    setVarRows(clone)
-    setVars(clone2)
-    setOptRows(clone3)
+    const clone = [...vars]
+    clone.push({
+      name: '',
+      type: '',
+      options: ['']
+    })
+    setVars(clone)
   }
 
-  const addOptRows = (number) => {
-    const clone = [...optRows]
-    const thisRow = clone[number]
-    thisRow.push(thisRow.length + 1)
-    setOptRows(clone)
+  const removeVarRows = (outerIndex) => {
+    const clone = [...vars]
+    clone.splice(outerIndex, 1)
+    setVars(clone)
+  }
+
+  const addOptRows = (index) => {
+    const clone = [...vars] 
+    clone[index].options.push("")
+    setVars(clone)
+  }
+
+  const removeOptRows = (outerIndex, innerIndex) => {
+    const clone = [...vars]
+    clone[outerIndex].options.splice(innerIndex, 1)
+    setVars(clone)
+  }
+
+  const addTypes = (type, index) => {
+    const clone = [...vars]
+    clone[index].type = type
+    clone[index].errorMessage = ''
+    setVars(clone)
+  }
+
+  const addCategory = (e) => {
+  e.preventDefault()
+
+  const obj = {}
+
+  const TypeIsValid = vars.every(variable => variable.type)
+
+  if (!TypeIsValid) {
+    const wrongTypes = vars.filter(variable => !variable.type)
+    wrongTypes.map((wrongType) => {
+      const clone = [...vars]
+      wrongType.errorMessage = "Please select a type!"
+      setVars(clone)
+    })
+  }
+
+  else {
+    setShowLoading(true)
+    vars.forEach(item => {
+      return obj[item.name] = item.type === 'text' ?
+        {
+          type: item.type
+        }
+        :
+        {
+          type: item.type,
+          options: item.options
+        }
+    })
+
+  function postData() {
+    axios.post(`${DOMAIN}/category/create`,
+  {
+    name: catName,
+    variables: obj
+    },
+    {
+    headers: {
+      a_auth: `at ${cookies.get('at')}`
+        }
+      }
+      )
+    .then(() => {
+      toast.success("New category added successfully!")
+      navigate('/admin/dashboard/categories')
+    })
+    .catch(err => {
+      console.log(err)
+      toast.error("Something went wrong. Please try again.")
+      setShowLoading(false)
+    })
+  }
+    
+  setTimeout(postData, 1500)
+      
+    }
   }
 
   return (
-    <div className="sm:mt-9 sm:ml-80 lg:mr-80 m-8"> 
-      <h1 className="text-lg text-gray-700 font-semibold mb-4">Add new category</h1>
+    <div className="sm:mt-9 sm:ml-80 xl:mr-80 m-8"> 
+      <h1 className="text-lg text-gray-700 font-semibold mb-4">Add New Category</h1>
+      <form onSubmit={(e) => addCategory(e)}>
         <div>
-        <label className="ml-1">Name:</label>
-              <input
-                placeholder="Enter category name"
-                className="text-gray-600 w-full py-3 pl-2 bg-gray-100	rounded-xl outline-none mt-1 mb-4"
-                value={catName}
-                onChange={(e) => setCatName(e.target.value)}
-        />
-        <label className=" ml-1">Variables:</label>
-        {
-          varRows.map((varRow, varIndex) => {
-            return (
-              <div className="flex mt-4 w-full" key={`var${varIndex}`}>
-                  <div className="md:w-1/3 md:mr-4" >
-                    <label className="ml-1 font-light text-sm">Name:</label>
-                        <input
-                          placeholder="Enter variable name"
-                          className="text-gray-600 w-full py-3 pl-2 bg-gray-100	rounded-xl outline-none mt-1 mb-4 text-sm"
-                          onChange={(e) => {
-                            const clone = [...vars]
-                            clone[varIndex].push(e.target.value)
-                            setVars(clone)
-                            console.log(vars)
-                          }}
+          <label className="ml-1">Name:</label>
+          <input
+            required
+            placeholder="Enter category name"
+            className="text-gray-600 w-full py-3 pl-2 bg-gray-100	rounded-xl outline-none mt-1 lg:mb-4 mb-8"
+            value={catName}
+            onChange={(e) => setCatName(e.target.value.trimStart())}
+          />
+          <label className=" ml-1">Variables:</label>
+          {
+            vars.map((row, outerIndex) => {
+              return (
+                <div className="lg:flex lg:mt-4 w-full" key={`var${outerIndex}`}>
+                    <div
+                    className={`mb-5 cursor-pointer mt-9 mr-2 flex hover:text-violet-700 ${vars.length > 1 ? "block" : "hidden"}`}
+                    onClick={() => removeVarRows(outerIndex)}
+                      >
+                      <div className="w-max lg:w-full lg:mr-0 text-2xl mr-1">
+                      <MdIcons.MdRemoveCircle
+                      />
+                      </div>
+                      <div className="font-semibold lg:hidden">Remove Variable</div>
+                      </div>
+                    <div className="lg:w-1/3 md:mr-4" >
+                      <label className="ml-1 font-light text-sm">Name:</label>
+                          <input
+                           required
+                            placeholder="Enter variable name"
+                            className="text-gray-600 w-full py-3 pl-2 bg-gray-100	rounded-xl outline-none mt-1 mb-4 text-sm"
+                            onChange={(e) => {
+                              const clone = [...vars]
+                              clone[outerIndex].name = (e.target.value.trimStart())
+                              setVars(clone)
+                      }}
+                            value={row.name}
+                      />
+                      </div>
+                      <div className="lg:w-1/3 md:mr-4">
+                      <TypesMenu
+                        addTypes={addTypes}
+                      index={outerIndex}
+                      errorMessage={row.errorMessage}
                     />
-                    </div>
-                    <div className="md:w-1/3 md:mr-4">
-                    <label className="ml-1 font-light text-sm">Type:</label>
-                        <input
-                          placeholder="Enter variable name"
-                          className="text-gray-600 w-full py-3 pl-2 bg-gray-100	rounded-xl outline-none mt-1 mb-4 text-sm"
-                    />
-                    </div>
-                    <div className="md:w-1/3 md:mr-4">
-                    <label className="ml-1 font-light text-sm">Options:</label>
-                       {
-                          optRows[varIndex].map((optRow, optIndex) => {
+                    <div className="text-red-400 text-sm font-semibold ml-1">{row.errorMessage}</div>
+                      </div>
+                  <div className="lg:w-1/3">
+                    {
+                      vars[outerIndex].type === 'text' ?
+                        ""
+                        :
+                        <>
+                        <label className="ml-1 font-light text-sm">Options:</label>
+                          {
+                            row.options.map((optRow, innerIndex) => {
                             return (
-                              <input
-                              key={optIndex}
-                              placeholder="Enter option name"
-                              className="text-gray-600 w-full py-3 pl-2 bg-gray-100	rounded-xl outline-none mt-1 mb-4 text-sm"
-                            />
+                              <>
+                                {
+                                  vars[outerIndex].type === 'text' ?
+                                    <div className="h-16" key={`div${innerIndex}`}> </div>
+                                    :
+                                    <div className="flex items-end">
+                                      <input
+                                        required
+                                        key={`optInput${innerIndex}`}
+                                        placeholder="Enter option name"
+                                        className="mr-2 text-gray-600 w-full py-3 pl-2 bg-gray-100	rounded-xl outline-none mt-1 mb-4 text-sm"
+                                        onChange={(e) => {
+                                          const clone = [...vars]
+                                          clone[outerIndex].options[innerIndex] = (e.target.value.trimStart())
+                                          setVars(clone)
+                                        }}
+                                        value={vars[outerIndex].options[innerIndex]}
+                                      />
+                                      <div
+                                        className={`mb-5 w-max cursor-pointer ${row.options.length > 1 ? "block" : "hidden"}`}
+                                        onClick={() => removeOptRows(outerIndex, innerIndex)}
+                                      >
+                                          <MdIcons.MdRemoveCircle
+                                          />
+                                          </div>
+                                      </div>
+                                }
+                              </>
                             )
                           })
-                  }
-                  <p
-                    onClick={() => addOptRows(varIndex)}
-                    className="text-sm cursor-pointer ml-1 text-gray-900 hover:text-violet-700 font-semibold"
-                  >
-                  Add More Options</p>
-                </div>  
+                          }
+                          <div
+                            key={`addOpt${outerIndex}`}
+                            onClick={() => addOptRows(outerIndex)}
+                            className="text-sm cursor-pointer ml-1 text-gray-900 hover:text-violet-700 font-semibold flex"
+                          >
+                            <div className="w-max flex items-center gap-1">
+                              <IOIcons.IoAddCircle
+                              />
+                              <div>
+                              Add More Options
+                              </div>
+                            </div>
+                          </div>
+                          </>
+                    }
+                  </div>  
+            </div>
+                  )
+                })
+              }
+          <div
+            onClick={addVarRows}
+            className="flex cursor-pointer ml-1 text-gray-900 hover:text-violet-700 font-semibold w-min"
+          >
+            
+            <div className="w-max flex items-center mt-10 gap-1">
+              <div className="text-2xl">
+              <IOIcons.IoAddCircle
+              />
+              </div>
+              <div>
+              Add Variable
+              </div>
+            </div>
           </div>
-                )
-              })
-            }
-        <p
-          onClick={addVarRows}
-          className="cursor-pointer ml-1 text-gray-900 hover:text-violet-700 font-semibold"
-        >
-        Add More Variables</p>
         </div>
+        <div className="text-right w-full mt-8">
+          {
+            showLoading ?
+              <SmallLoading
+              />
+              :
+              ""
+          }
+        <button
+          className="text-white bg-gray-900 outline-none hover:bg-gray-800 focus:ring-4 focus:ring-primary-300 font-medium rounded-lg text-sm px-6 py-2"
+            type="submit"
+          >
+            Add Category
+        </button>
+        </div>
+      </form>
     </div>
   )
 }

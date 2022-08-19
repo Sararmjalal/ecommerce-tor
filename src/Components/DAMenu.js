@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react"
-import { NavLink, Link } from "react-router-dom"
+import { useState } from "react"
+import { Link, useLocation } from "react-router-dom"
 import Confirm from "./Confirm"
 
 export default function DAMenu() {
@@ -7,14 +7,17 @@ export default function DAMenu() {
   const [mobileMenu, setMobileMenu] = useState(false)
   const [showAddPro, setShowAddPro] = useState(false)
   const [showAddCat, setShowAddCat] = useState(false)
+  const location = useLocation()
+
+  console.log(location)
 
   return (
     <div className="h-max m-6 sm:absolute sm:mt-0 sm:top-[calc(5rem-10px)] sm:left-5 sm:w-64 rounded-xl shadow-md	shadow-gray-700/10 overflow-hidden">
-      <div className="flex w-full bg-gray-800 text-white">
-        <div className="w-[calc(75%-10px)]">
+      <div className={`${location.pathname === "/admin/dashboard" ? "bg-gray-800 text-white" : "bg-gray-700 text-gray-400"} flex w-full  `}>
+        <div className="sm:w-full w-[calc(75%-10px)]">
           <Link to="/admin/dashboard/">
             <p
-              className="text-white p-4 font-light"
+              className=" p-4 font-light"
               onClick={() => {
                 setShowAddPro(false)
                 setShowAddCat(false)
@@ -23,7 +26,7 @@ export default function DAMenu() {
             >Dashboard</p>
           </Link>
         </div>
-        <div className="w-1/4 text-right">
+        <div className="sm:w-0 w-1/4 text-right">
           <button onClick={() => setMobileMenu(!mobileMenu)}
           data-collapse-toggle="mobile-menu-2"
           type="button"
@@ -43,85 +46,83 @@ export default function DAMenu() {
           </button>
         </div>
       </div>
-      <ul className={`${mobileMenu ? "block" : "sm:block hidden"} flex flex-col bg-gray-700`}>
-          <NavLink to="/admin/dashboard/products" style={({ isActive }) => isActive ? { color: "white", background:"red" } : { color: "#afafaf" }}>
+      <ul className={`${mobileMenu ? "block" : "sm:block hidden"} flex flex-col bg-gray-700 z-10`}>
             <li
-            className="p-4 font-light hover:text-white hover:bg-gray-800"
-            onClick={() => {
+            className={`${location.pathname.includes('/admin/dashboard/product') ? "bg-gray-800 text-white" : "text-gray-400"} cursor-pointer p-4 font-light hover:text-white hover:bg-gray-800`}
+             onClick={() => {
               setShowAddPro(!showAddPro)
               setShowAddCat(false)
-            }}
+          }}
             >
               Products
             </li>
-          </NavLink>
           {
             showAddPro ?
-            <ul className="bg-gray-800 ">
-              <NavLink to="/admin/dashboard/products" style={({ isActive }) => isActive ? { color: "white", background:"red" } : { color: "#afafaf" }}>
+            <ul className="bg-gray-800 font-light border-b-[1px] border-gray-700 pb-2">
+              <Link to="/admin/dashboard/products">
                 <li
-                  className="text-sm px-6 py-3"
+                  className={`text-sm px-6 py-3 ${location.pathname === "/admin/dashboard/products" ? "text-white" : "text-gray-400"}`}
                   onClick={() => {
                     setShowAddPro(false)
                     setShowAddCat(false)
                     setMobileMenu(false)
                   }}
-                >Products</li>
-              </NavLink>
-              <NavLink to="/admin/dashboard/product/create" style={({ isActive }) => isActive ? { color: "white", background:"red" } : { color: "#afafaf" }}>
+                  
+                >
+                  Products</li>
+              </Link>
+              <Link to="/admin/dashboard/product/create">
                 <li
-                  className="text-sm px-6 py-3 text-[#afafaf]"
+                  className={`text-sm px-6 py-3 ${location.pathname === "/admin/dashboard/products/create" ? "text-white" : " text-gray-400"}`}
                   onClick={() => {
                     setShowAddPro(false)
                     setShowAddCat(false)
                     setMobileMenu(false)
                   }}
                 >Add Product</li>
-               </NavLink> 
+               </Link> 
             </ul>
             :
             ""
           }
-          <NavLink to="/admin/dashboard/categories" style={({ isActive }) => isActive ? { color: "white", background:"red" } : { color: "#afafaf" }}>
             <li
-            className="p-4 font-light hover:text-white hover:bg-gray-800"
+            className={`${location.pathname.includes('/admin/dashboard/categor') ? "bg-gray-800 text-white" : " text-gray-400"} cursor-pointer p-4 font-light hover:text-white hover:bg-gray-800`}
             onClick={() => {
               setShowAddCat(!showAddCat)
               setShowAddPro(false)
             }}>
             Categories
           </li>
-          </NavLink>
           {
             showAddCat ?
-            <ul className="bg-gray-800">
-              <NavLink to="/admin/dashboard/categories" style={({ isActive }) => isActive ? { color: "white", background:"red" } : { color: "#afafaf" }}>
+            <ul className="bg-gray-800 font-light text-sm border-b-[1px] border-gray-700 pb-2">
+              <Link to="/admin/dashboard/categories">
                 <li
-                  className="text-sm px-6 py-3"
+                  className={`px-6 py-3 ${location.pathname === "/admin/dashboard/categories" ? "text-white" : " text-gray-400"}`}
                   onClick={() => {
                     setShowAddPro(false)
                     setShowAddCat(false)
                     setMobileMenu(false)
                   }}
                 >Categories</li>
-              </NavLink>
-              <NavLink to="/admin/dashboard/category/create" style={({ isActive }) => isActive ? { color: "white", background:"red" } : { color: "#afafaf" }}>
+              </Link>
+              <Link to="/admin/dashboard/category/create">
                 <li
-                  className="text-sm px-6 py-3 text-[#afafaf]"
+                  className={`px-6 py-3 ${location.pathname === "/admin/dashboard/category/create" ? "text-white" : " text-gray-400"}`}
                   onClick={() => {
                     setShowAddPro(false)
                     setShowAddCat(false)
                     setMobileMenu(false)
                   }}
                 >Add Category</li>
-               </NavLink> 
+               </Link> 
             </ul>
             :
             ""
           }
-          <NavLink to="/admin/dashboard/users" style={({ isActive }) => isActive ? { color: "white", background:"red" } : { color: "#afafaf" }}>
+          <Link to="/admin/dashboard/users">
             <li
-            className="p-4 font-light hover:text-white hover:bg-gray-800"
+            className={`${location.pathname === '/admin/dashboard/users' ? "bg-gray-800 text-white" : "text-gray-400"} cursor-pointer p-4 font-light hover:text-white hover:bg-gray-800`}
             onClick={() => {
               setShowAddPro(false)
               setShowAddCat(false)
@@ -129,7 +130,7 @@ export default function DAMenu() {
             }}>
             Users
           </li>
-          </NavLink>
+          </Link>
           <li
             className="pl-4 pr-4 pt-4 pb-6 font-light hover:text-white cursor-pointer text-[#afafaf] hover:bg-gray-800"
             onClick={() => setShowModal(true)}

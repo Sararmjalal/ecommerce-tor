@@ -1,8 +1,8 @@
 import { useState } from "react"
 import Logo from "../Uploads/Logo.png"
-import { useSelector, useDispatch } from 'react-redux'
-import { current_user, current_admin, adminLogout, logout } from "../Global State/Slice"
-import { useNavigate, Link } from "react-router-dom"
+import { useSelector } from 'react-redux'
+import { current_user, current_admin } from "../Global State/Slice"
+import { Link } from "react-router-dom"
 import Confirm from "./Confirm"
 
 export default function Header() {
@@ -10,9 +10,6 @@ export default function Header() {
   const [showModal, setShowModal] = useState(false)
   const thisUser = useSelector(current_user)
   const thisAdmin = useSelector(current_admin)
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-
 
   return (
     <div>
