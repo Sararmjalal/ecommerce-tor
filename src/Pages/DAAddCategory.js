@@ -9,18 +9,19 @@ import { toast } from 'react-toastify'
 import { useNavigate } from "react-router-dom"
 import SmallLoading from "../Components/SmallLoading"
 
+import { sleep } from '../lib'
+
 export default function DAAddCategory() {
   const [catName, setCatName] = useState('')
   const cookies = new Cookies()
   const navigate = useNavigate()
-  const [vars, setVars] = useState([
-    {
-      name: '',
-      type: '',
-      options: [""],
-      errorMessage: ''
-    },
-  ])
+  const [vars, setVars] = useState([{
+    name: '',
+    type: '',
+    options: [""],
+    errorMessage: ''
+  },])
+  
   const [showLoading, setShowLoading] = useState(false)
 
   const addVarRows = () => {
@@ -40,7 +41,7 @@ export default function DAAddCategory() {
   }
 
   const addOptRows = (index) => {
-    const clone = [...vars] 
+    const clone = [...vars]
     clone[index].options.push("")
     setVars(clone)
   }
@@ -58,68 +59,62 @@ export default function DAAddCategory() {
     setVars(clone)
   }
 
-  const addCategory = (e) => {
-  e.preventDefault()
+  const addCategory = async (e) => {
+    e.preventDefault()
 
-  const obj = {}
-
-  const TypeIsValid = vars.every(variable => variable.type)
-
-  if (!TypeIsValid) {
+    const obj = {}
+    const TypeIsValid = vars.every(variable => variable.type)
     const wrongTypes = vars.filter(variable => !variable.type)
-    wrongTypes.map((wrongType) => {
+
+    if (!TypeIsValid) return wrongTypes.forEach((wrongType, i, ref) => {
       const clone = [...vars]
       wrongType.errorMessage = "Please select a type!"
       setVars(clone)
+      if (i === ref.length - 1) setShowLoading(false)
     })
-  }
 
-  else {
-    setShowLoading(true)
     vars.forEach(item => {
-      return obj[item.name] = item.type === 'text' ?
-        {
+      return obj[item.name] = item.type === 'text' ? {
           type: item.type
-        }
-        :
+        } :
         {
           type: item.type,
           options: item.options
         }
     })
 
-  function postData() {
-    axios.post(`${DOMAIN}/category/create`,
-  {
-    name: catName,
-    variables: obj
-    },
-    {
-    headers: {
-      a_auth: `at ${cookies.get('at')}`
+    try {
+
+      await sleep(1500)
+
+      await axios.post(`${DOMAIN}/category/create`, {
+        name: catName,
+        variables: obj
+      }, {
+        headers: {
+          a_auth: `at ${cookies.get('at')}`
         }
-      }
-      )
-    .then(() => {
+      });
+
       toast.success("New category added successfully!")
       navigate('/admin/dashboard/categories')
-    })
-    .catch(err => {
+
+    } catch (err) {
       console.log(err)
       toast.error("Something went wrong. Please try again.")
       setShowLoading(false)
-    })
-  }
-    
-  setTimeout(postData, 1500)
-      
     }
+
   }
 
+  
   return (
     <div className="sm:mt-9 sm:ml-80 xl:mr-80 m-8"> 
       <h1 className="text-lg text-gray-700 font-semibold mb-4">Add New Category</h1>
-      <form onSubmit={(e) => addCategory(e)}>
+      <form onSubmit={(e) => {
+        setShowLoading(true)
+        addCategory(e)
+      }}>
         <div>
           <label className="ml-1">Name:</label>
           <input
@@ -261,4 +256,5 @@ export default function DAAddCategory() {
       </form>
     </div>
   )
+
 }

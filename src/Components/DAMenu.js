@@ -15,7 +15,7 @@ export default function DAMenu() {
     <div className="h-max m-6 sm:absolute sm:mt-0 sm:top-[calc(5rem-10px)] sm:left-5 sm:w-64 rounded-xl shadow-md	shadow-gray-700/10 overflow-hidden">
       <div className={`${location.pathname === "/admin/dashboard" ? "bg-gray-800 text-white" : "bg-gray-700 text-gray-400"} flex w-full  `}>
         <div className="sm:w-full w-[calc(75%-10px)]">
-          <Link to="/admin/dashboard/">
+          <Link to="/admin/dashboard">
             <p
               className=" p-4 font-light"
               onClick={() => {
