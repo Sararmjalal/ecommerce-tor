@@ -10,6 +10,27 @@
   }
 }
 
+/* width */
+::-webkit-scrollbar {
+  width: 7px;
+}
+
+/* Track */
+::-webkit-scrollbar-track {
+  background: #ffffff00; 
+}
+
+/* Handle */
+::-webkit-scrollbar-thumb {
+  border-radius: 12px;
+  background: #374151
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #1f2937
+}
+
+
 .lds-ellipsis {
   display: inline-block;
   position: relative;

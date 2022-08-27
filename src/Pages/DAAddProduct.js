@@ -6,6 +6,7 @@ import { useNavigate } from "react-router-dom";
 import * as ReactIconsBS from "react-icons/bs/index"
 import CatList from '../Components/AddProductCatList';
 import VarList from '../Components/AddProductVarList';
+import UploadBox from '../Components/AddProductUploadBox';
 
 export default function DAAddProduct() {
   const [loading, setLoading] = useState(true)
@@ -16,10 +17,12 @@ export default function DAAddProduct() {
   const [catList, setCatList] = useState([])
   const [category, setCategory] = useState('')
   const [variables, setVariables] = useState([])
+  const [mainImage, setMainImage] = useState('')
+
   const editorRef = useRef(null);
   const navigate = useNavigate()
-  const myRef = useRef(null)
 
+  console.log(variables)
   useEffect(() => {
   const getCats = async () => {
     try {
@@ -34,6 +37,7 @@ export default function DAAddProduct() {
     }
     }
     getCats()
+    
   }, [])
 
   console.log(category)
@@ -48,9 +52,9 @@ export default function DAAddProduct() {
     setCatList(clone)
     setCategory(clone[index])
     
-    let vars = Object.values(clone[index].variables)
+    const vars = Object.values(clone[index].variables)
     const names = Object.keys(clone[index].variables)
-    vars = vars.map((item, i) => {
+    const newVars = vars.map((item, i) => {
       if(item.type !== "text") 
         return {
           ...item,
@@ -64,11 +68,29 @@ export default function DAAddProduct() {
         name: names[i]
       }
     })
-    setVariables(vars)
+    setVariables(newVars)
   }
 
-  console.log(variables)
-  if(myRef.current) console.log(myRef.current.offsetTop)
+  const selectVariables = (varIndex, optIndex) => {
+    const clone = [...variables]
+    const myVar = clone[varIndex]
+    const myOpt = clone[varIndex].options[optIndex]
+
+    console.log(myVar.type)
+
+    if (myVar.type === "text") return console.log("hello text")
+
+    if (myVar.type === "multiselect") {
+      myOpt.isSelected = !myOpt.isSelected
+      return setVariables(clone)
+    }
+    
+    myVar.options.forEach(option => {
+      option.isSelected = false
+    })
+    myOpt.isSelected = true
+    setVariables(clone)
+  }
 
   // اخر سر وقتی میخوای کتگوری رو بفرستی ایز سکلتد رو پاک کن
 
@@ -92,7 +114,7 @@ export default function DAAddProduct() {
       <div>
         <input placeholder="Product Title..."
           required
-          className="text-gray-600 w-full py-3 pl-2 bg-gray-100	rounded-xl outline-none mt-1 lg:mb-4 mb-8"
+          className="text-gray-600 w-full py-3 pl-2 bg-gray-100 hover:bg-gray-200 focus:bg-gray-200	rounded-xl outline-none mt-1 lg:mb-4 mb-8"
           value={title}
           onChange={(e) => setTitle(e.target.value.trimStart())}
         />
@@ -104,15 +126,15 @@ export default function DAAddProduct() {
          }}
        />
       </div>
-      <div className='flex mt-4'>
-        <div className='w-[calc(66.7%-1rem)] border-[1px] border-gray-200 rounded-xl mr-[1rem] pb-12'>
+      <div className='xl:flex mt-4'>
+        <div className='xl:w-[calc(66.7%-1rem)] border-[1px] border-gray-200 rounded-xl xl:mr-[1rem] sm:pb-6 pb-2'>
             <p className="m-4 font-semibold">Product Details:</p>
-            <div className='mx-8'>
+            <div className='sm:mx-8 mx-4'>
               <div className='flex gap-2 items-center'>
                     <div className='mr-1'>Is Available?</div>
                     <div
                       className={` w-5 h-5 cursor-pointer rounded-md p-[1.5px] 
-                      ${isAvailable ? "bg-violet-700" : "bg-white border-2 border-gray-200"}`}
+                      ${isAvailable ? "bg-gray-700" : "bg-white border-2 border-gray-200"}`}
                       onClick={() => setIsAvailable(!isAvailable)}
                     >
                       {isAvailable ? <ReactIconsBS.BsCheck fill='white' size="18px" /> : " "}
@@ -123,24 +145,24 @@ export default function DAAddProduct() {
                 isAvailable ?
                     <div>
                       <div className='flex'>
-                        <div className="w-1/3">
+                        <div className="lg:w-1/3 sm:w-1/2 w-1/3">
                            <input
                             required
                             placeholder="Quantity"
                             type="number"
                             value={quantity}
                             onChange={(e) => setQuantity(Number(e.target.value))}
-                            className="outline-none text-gray-600 w-full py-3 pl-2 bg-gray-100	rounded-xl mt-1"
+                            className="outline-none text-gray-600 w-full py-3 pl-2 bg-gray-100 hover:bg-gray-200 focus:bg-gray-200	rounded-xl mt-1"
                             />
                         </div>
-                        <div className="w-2/3 ml-2">
+                        <div className="lg:w-2/3 sm:w-1/2 w-2/3 ml-2">
                           <input
                             required
                             placeholder="Price"
                             type="number"
                             value={price}
                             onChange={(e) => setPrice(Number(e.target.value))}
-                            className="text-gray-600 w-full py-3 pl-2 bg-gray-100 rounded-xl outline-none mt-1"
+                            className="text-gray-600 w-full py-3 pl-2 bg-gray-100 hover:bg-gray-200 focus:bg-gray-200 rounded-xl outline-none mt-1"
                           />
                           </div>
                       </div>
@@ -149,10 +171,10 @@ export default function DAAddProduct() {
                   ""
                 }
               </div>
-              <div className='my-4 flex'>
-                <div className='w-1/2'>
+              <div className='my-6 lg:flex'>
+                <div className='lg:w-1/2'>
                       <p className='mr-1 mb-4'>Category:</p>
-                      <ul>
+                      <ul className='overflow-y-auto flex flex-col h-64 border-[1px] border-gray-200 rounded-xl p-4 lg:mr-4'>
                       {
                         catList.map((cat, i) => {
                           return (
@@ -167,13 +189,14 @@ export default function DAAddProduct() {
                         }
                         </ul>
                 </div>
-                <div className='w-1/2'>
+                <div className='lg:w-1/2 lg:mt-0 mt-6'>
                   {
                     category ?
                           <div>
                             <p className='mr-1 mb-4'>Variables:</p>
                             <ul
-                              className='flex flex-col h-64 overflow-y-scroll border-[1px] border-gray-200 rounded-xl p-4'>
+                              className="overflow-y-auto flex flex-col h-64 border-[1px] border-gray-200 rounded-xl p-4 lg:ml-4"
+                            >
                               {
                                 variables.map((varr, outerIndex) => {
                                   return (
@@ -181,7 +204,7 @@ export default function DAAddProduct() {
                                       varr={varr}
                                       outerIndex={outerIndex}
                                       variables={variables}
-                                      myRef={myRef}
+                                      selectVariables={selectVariables}
                                     />
                                   )
                                 })
@@ -195,7 +218,13 @@ export default function DAAddProduct() {
               </div>
             </div>
         </div>
-        <div className='w-1/3 border-[1px] border-gray-200 rounded-xl'>
+              <div className='xl:w-1/3 xl:mt-0 mt-6 border-[1px] border-gray-200 rounded-xl p-4'>
+                <div className='flex flex-col gap-4'>
+                <p className="font-semibold">Product Gallery:</p>
+                  <UploadBox 
+                  
+                  />
+                </div>
         </div>
       </div>
           </form>
