@@ -7,7 +7,7 @@ const VarList = (props) => {
       className={`flex gap-2 mb-6 ${props.outerIndex === props.variables.length-1 ? "" : "border-b-[1px] border-gray-200"} `}>
       {
         props.varr.type === "text" ?
-        <div className="flex items-center gap-2 w-full">
+        <div className="flex items-center gap-2 w-full mb-6">
             <p className='w-1/2 font-semibold text-gray-500'>{props.varr.name}:</p>
           <input
             placeholder='Type value...'
