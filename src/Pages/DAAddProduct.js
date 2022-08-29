@@ -17,7 +17,9 @@ export default function DAAddProduct() {
   const [catList, setCatList] = useState([])
   const [category, setCategory] = useState('')
   const [variables, setVariables] = useState([])
-  const [mainImage, setMainImage] = useState('')
+  const [showModal, setShowModal] = useState(false)
+  const [formImages, setFormImages] = useState([])
+
 
   const editorRef = useRef(null);
   const navigate = useNavigate()
@@ -220,14 +222,32 @@ export default function DAAddProduct() {
         </div>
               <div className='xl:w-1/3 xl:mt-0 mt-6 border-[1px] border-gray-200 rounded-xl p-4'>
                 <div className='flex flex-col gap-4'>
-                <p className="font-semibold">Product Gallery:</p>
-                  <UploadBox 
-                  
-                  />
+                  <p className="font-semibold">Product Gallery:</p>
+                  <div
+                    className='flex flex-col items-center py-24 cursor-pointer bg-gray-100 hover:bg-gray-200 focus:bg-grat-200 w-full rounded-xl'
+                    onClick={() => setShowModal(true)}
+                  >
+                    <div>
+                      <ReactIconsBS.BsPlusSquareDotted />
+                    </div>
+                  </div>
                 </div>
         </div>
       </div>
           </form>
+      }
+      {
+        showModal ?
+      <div className="fadeAnimte">
+           <UploadBox 
+            uploadUrl={`${DOMAIN}/file/upload-reserve`}
+            setFormImages={setFormImages}
+            showModal={showModal}
+           setShowModal={setShowModal}
+            />
+            </div>
+          :
+          ""
       }
     </div> 
   )

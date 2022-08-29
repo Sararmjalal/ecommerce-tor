@@ -10,6 +10,15 @@
   }
 }
 
+@keyframes fadeIn {
+  from {opacity: 0;}
+  to {opacity: 100;}
+}
+
+.fadeAnimte {
+  animation: fadeIn 0.3s;
+}
+
 /* width */
 ::-webkit-scrollbar {
   width: 7px;
